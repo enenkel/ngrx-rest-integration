@@ -1,20 +1,6 @@
-import {Action} from "@ngrx/store";
-import {IStudent} from "../reducers/students";
+import {GenericActions} from "../_rest-helper/actions/generic.action";
 
-export enum StudentsActionTypes {
-    LoadAllStudents = "[Students] Load all students",
-    LoadAllStudentsSuccess = "[Students] Load all students successfully"
+export class StudentsAction extends GenericActions {
+    public actionName = "Students";
+    public resourcePath = "/students";
 }
-
-export class LoadStudents implements Action {
-    readonly type = StudentsActionTypes.LoadAllStudents;
-}
-
-export class LoadStudentsSuccess implements Action {
-    readonly type = StudentsActionTypes.LoadAllStudentsSuccess;
-
-    constructor(public payload: IStudent[]) {
-    }
-}
-
-export type StudentsActions = LoadStudents | LoadStudentsSuccess;

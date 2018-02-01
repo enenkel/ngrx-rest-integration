@@ -2,7 +2,8 @@ import {Component} from "@angular/core";
 import {select, Store} from "@ngrx/store";
 
 import {getStudentList, IState} from "./reducers";
-import {LoadStudents} from "./actions/students.action";
+import {StudentsAction} from "./actions/students.action";
+import {NGRXRestService} from "./_rest-helper/services/ngrx-rest.service";
 
 @Component({
     selector: "app-root",
@@ -14,12 +15,11 @@ export class AppComponent {
     public students;
 
 
-    constructor(private store: Store<IState>) {
+    constructor(private store: Store<IState>, private ngrxRestService: NGRXRestService) {
         this.students = this.store.pipe(select(getStudentList));
     }
 
     loadStudents() {
-        this.store.dispatch(new LoadStudents());
+        this.ngrxRestService.getAll(StudentsAction);
     }
-
 }

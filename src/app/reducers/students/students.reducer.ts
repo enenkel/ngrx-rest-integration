@@ -1,4 +1,5 @@
-import {StudentsActions, StudentsActionTypes} from "../../actions/students.action";
+import {Action} from "@ngrx/store";
+import {StudentsAction} from "../../actions/students.action";
 
 export interface IStudent {
     id: number;
@@ -14,13 +15,16 @@ const initialState: IState = {
     studentList: []
 };
 
-export function reducer(state: IState = initialState, action: StudentsActions): IState {
+export function reducer(state: IState = initialState, action: Action): IState {
     switch (action.type) {
-        case StudentsActionTypes.LoadAllStudentsSuccess:
+        case new StudentsAction().getAllSuccessType():
             return {
                 ...state,
-                studentList: [].concat(action.payload)
+                studentList: [].concat((<any>action).payload)
             };
+        case new StudentsAction().getAllErrorType():
+            // TODO: this is just for dev, add proper error handler
+            return {...state};
         default:
             return state;
     }

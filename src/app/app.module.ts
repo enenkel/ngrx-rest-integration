@@ -13,6 +13,9 @@ import {AppComponent} from "./app.component";
 import {metaReducers, reducers} from "./reducers";
 import {DataService} from "./services/data.service";
 import {StudentsEffect} from "./effects/students.effect";
+import {NGRXRestService} from "./_rest-helper/services/ngrx-rest.service";
+import {NgrxRestDataService} from "./_rest-helper/services/ngrx-rest-data.service";
+import {NgrxEffectHelper} from "./_rest-helper/services/ngrx-effect-helper.service";
 
 
 @NgModule({
@@ -30,7 +33,7 @@ import {StudentsEffect} from "./effects/students.effect";
         }),
         EffectsModule.forRoot([StudentsEffect])
     ],
-    providers: [DataService],
+    providers: [DataService, NGRXRestService, NgrxRestDataService, NgrxEffectHelper],
     bootstrap: [AppComponent]
 })
 export class AppModule {
