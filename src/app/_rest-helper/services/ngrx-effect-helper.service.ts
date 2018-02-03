@@ -1,13 +1,13 @@
 import {Injectable} from "@angular/core";
 import {OperatorFunction} from "rxjs/interfaces";
-import {GenericActions, GenericActionTypes} from "../actions/generic.action";
+import {GenericAction, GenericActionTypes} from "../actions/generic.action";
 import {Action} from "@ngrx/store";
 import {ofType} from "@ngrx/effects";
 import {NgrxRestDataService} from "./ngrx-rest-data.service";
-import {Observable} from "rxjs/Observable";
-import {catchError, map, switchMap} from "rxjs/operators";
+import {catchError, map, mergeMap} from "rxjs/operators";
 import {of} from "rxjs/observable/of";
 import {pipe} from "rxjs/RX";
+import {ExtendedAction} from "../utils/ngrx-rest-utils";
 
 @Injectable()
 export class NgrxEffectHelper {
@@ -15,34 +15,74 @@ export class NgrxEffectHelper {
     constructor(private ngrxRestDataService: NgrxRestDataService) {
     }
 
-    selectAction<action extends GenericActions>(actionClass: new () => action,
-                                                actionType: GenericActionTypes): OperatorFunction<Action, Action> {
-        // TODO: add selector for multiple action types
-        return ofType(new actionClass().getType(actionType));
+    /**
+     * Adds default ngrx ofType selector for all action types provided.
+     * @param {{new(): action}} actionClass The ActionClass which should be handled (extending GenericAction).
+     * @param {GenericActionTypes | GenericActionTypes[]} actionTypes One or more action types which should be handled.
+     * @return {OperatorFunction<Action, Action>} The generated ofType selector.
+     */
+    selectAction<action extends GenericAction>(actionClass: new () => action,
+                                               actionTypes: GenericActionTypes | GenericActionTypes[]): OperatorFunction<Action, Action> {
+        actionTypes = [].concat(actionTypes);
+        const actionInstance = new actionClass();
+        const typeArray = actionTypes.map((actionType: GenericActionTypes) => actionInstance.getActionType(actionType));
+        return ofType(...typeArray);
     }
 
-    executeRequest<action extends GenericActions, R>(actionClass: new () => action): OperatorFunction<Action, Observable<R>> {
-        // TODO: add parameter to specify action Type
-        // TODO: implement retry logic
-        // TODO: use payload for specific request
-        // TODO: user mergemap via options to prevent request abort
-        return switchMap((actionObject: Action) => {
+    // TODO: add parameter to specify action Type
+    // TODO: implement retry logic
+    // TODO: use payload for specific request
+    // TODO: user mergemap / switchMap via options to prevent request abort
+    executeRequest<action extends GenericAction, R>
+    (actionClass: new () => action): OperatorFunction<ExtendedAction<R>, ({ response: R, actionType: string })> {
+        return mergeMap((actionObject: ExtendedAction<any>) => {
             const actionInstance = new actionClass();
-            return this.ngrxRestDataService.loadAll(actionInstance.resourcePath);
+            // we need to forward the actionType to later operators, so the response can be handled properly.
+            return this.ngrxRestDataService.loadAll<R>(actionInstance.resourcePath)
+                .pipe(map((response: R) => ({response, actionType: actionObject.actionType})));
         });
     }
 
 
-    handleSuccessResponse<action extends GenericActions>(actionClass: new () => action): OperatorFunction<any, Action> {
-        return map((response) => ({type: new actionClass().getAllSuccessType(), payload: response}));
+    /**
+     * Creates the success action for the specified actionClass and actionType.
+     * @param {{new(): action}} actionClass The action class which specifies the base action type.
+     * @return {OperatorFunction<any, Action>} The generated map statement, mapping the input response to a success action.
+     */
+    handleSuccessResponse<action extends GenericAction>(actionClass: new () => action): OperatorFunction<any, Action> {
+        return map(({response, actionType}) => ({
+            type: new actionClass().getActionType(actionType, "success"),
+            payload: response
+        }));
     }
 
-    handleErrorResponse<action extends GenericActions>(actionClass: new () => action): OperatorFunction<Action, Action> {
-        return catchError(err => of({type: new actionClass().getAllErrorType(), payload: err}));
+    /**
+     * Creates the error action for the specified actionClass and actionType.
+     * @param {{new(): action}} actionClass The action class which specifies the base action type.
+     * TODO: merge this with multi ofType
+     * @param {GenericActionTypes} actionType
+     * @return {OperatorFunction<Action, Action>}
+     */
+    handleErrorResponse<action extends GenericAction>(actionClass: new () => action): OperatorFunction<Action, Action> {
+        return catchError(({err, actionType}) => of({
+            type: new actionClass().getActionType(actionType, "success"),
+            payload: err
+        }));
     }
 
-    handle<action extends GenericActions>(actionClass: new () => action,
-                                          actionType: GenericActionTypes): OperatorFunction<Action, Action> {
+    /**
+     * TODO: skip specific steps
+     *
+     * skipErrorHandling: boolean = false,
+     * skipSuccessHandling: boolean = false,
+     * skipExecuteRequest: boolean = false
+
+     * @param {{new(): action}} actionClass
+     * @param {GenericActionTypes} actionType
+     * @return {OperatorFunction<Action, Action>}
+     */
+    handle<action extends GenericAction>(actionClass: new () => action,
+                                         actionType: GenericActionTypes): OperatorFunction<Action, Action> {
         return pipe(
             this.selectAction(actionClass, actionType),
             this.executeRequest(actionClass),

@@ -1,5 +1,6 @@
-import {Action} from "@ngrx/store";
 import {StudentsAction} from "../../actions/students.action";
+import {NgrxReducerHelper} from "../../_rest-helper/services/ngrx-reducer-helper";
+import {ExtendedAction} from "../../_rest-helper/utils/ngrx-rest-utils";
 
 export interface IStudent {
     id: number;
@@ -15,19 +16,8 @@ const initialState: IState = {
     studentList: []
 };
 
-export function reducer(state: IState = initialState, action: Action): IState {
-    switch (action.type) {
-        case new StudentsAction().getAllSuccessType():
-            return {
-                ...state,
-                studentList: [].concat((<any>action).payload)
-            };
-        case new StudentsAction().getAllErrorType():
-            // TODO: this is just for dev, add proper error handler
-            return {...state};
-        default:
-            return state;
-    }
+export function reducer(state: IState = initialState, action: ExtendedAction<any>): IState {
+    return NgrxReducerHelper.genericReducer(state, action, StudentsAction);
 }
 
 export const getStudentList = (state: IState) => state.studentList;

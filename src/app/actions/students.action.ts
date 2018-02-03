@@ -1,6 +1,6 @@
-import {GenericActions} from "../_rest-helper/actions/generic.action";
+import {GenericAction} from "../_rest-helper/actions/generic.action";
 
-export class StudentsAction extends GenericActions {
+export class StudentsAction extends GenericAction {
     public actionName = "Students";
     public resourcePath = "/students";
 }

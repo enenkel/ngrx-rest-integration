@@ -1,4 +1,4 @@
-import {ActionReducerMap, createSelector, createFeatureSelector, ActionReducer, MetaReducer,} from "@ngrx/store";
+import {ActionReducerMap, createSelector, createFeatureSelector, ActionReducer, MetaReducer} from "@ngrx/store";
 import {environment} from "../../environments/environment";
 import {storeFreeze} from "ngrx-store-freeze";
 

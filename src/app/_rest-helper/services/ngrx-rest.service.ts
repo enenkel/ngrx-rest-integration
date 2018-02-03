@@ -1,49 +1,38 @@
 import {Injectable} from "@angular/core";
-import {GenericActions, GenericActionTypes} from "../actions/generic.action";
-import {Action, Store} from "@ngrx/store";
+import {GenericAction} from "../actions/generic.action";
+import {Store} from "@ngrx/store";
 import {IState} from "../../reducers";
-import {NgrxRestDataService} from "./ngrx-rest-data.service";
+import {NgrxRestUtils} from "../utils/ngrx-rest-utils";
 
 @Injectable()
 export class NGRXRestService {
 
-    constructor(private store: Store<IState>, private ngrxRestDataService: NgrxRestDataService) {
+    constructor(private store: Store<IState>) {
     }
 
-    getAll<action extends GenericActions>(actionClass: new () => action) {
-        const actionInstance = this.createActionInstance(actionClass, "LoadAll");
+    getAll<action extends GenericAction>(actionClass: new () => action): void {
+        const actionInstance = NgrxRestUtils.createActionInstance(actionClass, "LoadAll");
         this.store.dispatch(actionInstance);
     }
 
-    private createActionInstance<action extends GenericActions>(actionClass: new () => action,
-                                                                actionType: GenericActionTypes,
-                                                                onlyType: boolean = false): Action {
-        const instance: action = new actionClass();
-        let action: Action;
-        const type = instance.getType(actionType);
-
-        if (onlyType) {
-            return {type};
-        }
-
-        switch (actionType) {
-            case "LoadAll":
-                action = {type};
-                break;
-            default:
-                throw new Error("Not a supported actiontype");
-        }
-        return action;
+    getOne<action extends GenericAction, P>(actionClass: new() => action, payload: P): void {
+        const actionInstance = NgrxRestUtils.createActionInstance(actionClass, "LoadOne", payload);
+        this.store.dispatch(actionInstance);
     }
 
-    /**
-     * Get's the actions type string
-     * @param {{new(): action}} actionClass
-     * @param {GenericActionTypes} actionType
-     * @return {string}
-     */
-    getType<action extends GenericActions>(actionClass: new () => action,
-                                           actionType: GenericActionTypes): string {
-        return new actionClass().getType(actionType);
+    updateOne<action extends GenericAction, P>(actionClass: new() => action, payload: P): void {
+        const actionInstance = NgrxRestUtils.createActionInstance(actionClass, "UpdateOne", payload);
+        this.store.dispatch(actionInstance);
     }
+
+    deleteOne<action extends GenericAction, P>(actionClass: new() => action, payload: P): void {
+        const actionInstance = NgrxRestUtils.createActionInstance(actionClass, "DeleteOne", payload);
+        this.store.dispatch(actionInstance);
+    }
+
+    createOne<action extends GenericAction, P>(actionClass: new() => action, payload: P): void {
+        const actionInstance = NgrxRestUtils.createActionInstance(actionClass, "CreateOne", payload);
+        this.store.dispatch(actionInstance);
+    }
+
 }
