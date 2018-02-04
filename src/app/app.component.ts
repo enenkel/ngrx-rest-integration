@@ -3,7 +3,7 @@ import {select, Store} from "@ngrx/store";
 
 import {getStudentList, IState} from "./reducers";
 import {StudentsAction} from "./actions/students.action";
-import {NGRXRestService} from "./_rest-helper/services/ngrx-rest.service";
+import {StoreHelperService} from "@omm/ngrx-helpers/src";
 
 @Component({
     selector: "app-root",
@@ -15,11 +15,11 @@ export class AppComponent {
     public students;
 
 
-    constructor(private store: Store<IState>, private ngrxRestService: NGRXRestService) {
+    constructor(private store: Store<IState>, private storeHelperService: StoreHelperService) {
         this.students = this.store.pipe(select(getStudentList));
     }
 
     loadStudents() {
-        this.ngrxRestService.getAll(StudentsAction);
+        this.storeHelperService.getAll(StudentsAction);
     }
 }

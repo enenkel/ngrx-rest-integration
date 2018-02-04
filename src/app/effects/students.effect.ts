@@ -4,17 +4,18 @@ import {Observable} from "rxjs/Observable";
 import {Action} from "@ngrx/store";
 import {DataService} from "../services/data.service";
 import {StudentsAction} from "../actions/students.action";
-import {NgrxEffectHelper} from "../_rest-helper/services/ngrx-effect-helper.service";
+import {EffectHelperService} from "@omm/ngrx-helpers/src";
+
 
 @Injectable()
 export class StudentsEffect {
 
     @Effect()
     students$: Observable<Action> = this.actions$
-        .pipe(this.ngrxEffectHelper.handle(StudentsAction, "LoadAll"));
+        .pipe(this.effectHelperService.handle(StudentsAction, "LoadAll"));
 
     constructor(private actions$: Actions,
                 private dataService: DataService,
-                private ngrxEffectHelper: NgrxEffectHelper) {
+                private effectHelperService: EffectHelperService) {
     }
 }

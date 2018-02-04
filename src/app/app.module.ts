@@ -7,15 +7,13 @@ import {CommonModule} from "@angular/common";
 import {StoreModule} from "@ngrx/store";
 import {StoreDevtoolsModule} from "@ngrx/store-devtools";
 import {EffectsModule} from "@ngrx/effects";
-import {environment} from "../environments/environment";
+import {NgrxHelpersModule} from "@omm/ngrx-helpers/src/index";
 
+import {environment} from "../environments/environment";
 import {AppComponent} from "./app.component";
 import {metaReducers, reducers} from "./reducers";
 import {DataService} from "./services/data.service";
 import {StudentsEffect} from "./effects/students.effect";
-import {NGRXRestService} from "./_rest-helper/services/ngrx-rest.service";
-import {NgrxRestDataService} from "./_rest-helper/services/ngrx-rest-data.service";
-import {NgrxEffectHelper} from "./_rest-helper/services/ngrx-effect-helper.service";
 
 
 @NgModule({
@@ -31,9 +29,10 @@ import {NgrxEffectHelper} from "./_rest-helper/services/ngrx-effect-helper.servi
             name: "ngrx-rest-integration-devtools",
             logOnly: environment.production
         }),
-        EffectsModule.forRoot([StudentsEffect])
+        EffectsModule.forRoot([StudentsEffect]),
+        NgrxHelpersModule.forRoot()
     ],
-    providers: [DataService, NGRXRestService, NgrxRestDataService, NgrxEffectHelper],
+    providers: [DataService],
     bootstrap: [AppComponent]
 })
 export class AppModule {
