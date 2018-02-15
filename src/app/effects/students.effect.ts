@@ -4,7 +4,7 @@ import {Observable} from "rxjs/Observable";
 import {Action} from "@ngrx/store";
 import {DataService} from "../services/data.service";
 import {StudentsAction} from "../actions/students.action";
-import {EffectHelperService} from "@omm/ngrx-helpers/src";
+import {EffectHelperService} from "@omm/ngrx-helpers";
 
 
 @Injectable()

@@ -1,5 +1,5 @@
 import {StudentsAction} from "../../actions/students.action";
-import {ExtendedAction, ReducerHelper} from "@omm/ngrx-helpers/src";
+import {ExtendedAction, ReducerHelper} from "@omm/ngrx-helpers";
 
 
 export interface IStudent {

@@ -3,7 +3,7 @@ import {select, Store} from "@ngrx/store";
 
 import {getStudentList, IState} from "./reducers";
 import {StudentsAction} from "./actions/students.action";
-import {StoreHelperService} from "@omm/ngrx-helpers/src";
+import {StoreHelperService} from "@omm/ngrx-helpers";
 
 @Component({
     selector: "app-root",

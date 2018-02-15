@@ -7,7 +7,7 @@ import {CommonModule} from "@angular/common";
 import {StoreModule} from "@ngrx/store";
 import {StoreDevtoolsModule} from "@ngrx/store-devtools";
 import {EffectsModule} from "@ngrx/effects";
-import {NgrxHelpersModule} from "@omm/ngrx-helpers/src/index";
+import {NgrxHelpersModule} from "@omm/ngrx-helpers";
 
 import {environment} from "../environments/environment";
 import {AppComponent} from "./app.component";
